@@ -13,7 +13,7 @@ from states.profile_states import ProfileFSM
 from keyboards.profile_kb import profile_menu_kb
 from routes.auth_routes.start_cmd import start
 from routes.auth_routes.util import normalize_phone
-from services.api_service import fetch_user, update_user
+from services.user_api_service import fetch_user, update_user
 
 
 router = Router()

@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from states.auth_states import Onboard
-from services.api_service import verify_user
+from services.user_api_service import verify_user
 
 
 router = Router()
@@ -17,9 +17,10 @@ async def start(message: Message, state: FSMContext):
 
     # check if user already exists 
     verified = await verify_user(tg_id)
+    data = verified.get("data")
 
-    if verified.get('registered') == True:
-        await message.answer(f"Вы уже зарегистрированы как {verified.get('role')} ✅")
+    if data.get('registered'):
+        await message.answer(f"Вы уже зарегистрированы как {data.get('role')} ✅")
         return
 
     await state.clear()

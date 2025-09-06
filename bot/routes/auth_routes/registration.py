@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 
 from states.auth_states import Onboard
 from routes.auth_routes.util import normalize_phone
-from services.api_service import create_user
+from services.user_api_service import create_user
 
 
 router = Router()
