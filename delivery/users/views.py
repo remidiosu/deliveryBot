@@ -9,7 +9,7 @@ from rest_framework import status
 
 class RegisterCourierView(APIView):
     def post(self, request):
-        serializer = CourierSerializer(data=request.data)
+        serializer = CourierSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             courier = serializer.save()
             return Response(CourierSerializer(courier).data, status=status.HTTP_201_CREATED)
@@ -18,7 +18,7 @@ class RegisterCourierView(APIView):
 
 class RegisterControllerView(APIView):
     def post(self, request):
-        serializer = ControllerSerializer(data=request.data)
+        serializer = ControllerSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             controller = serializer.save()
             return Response(ControllerSerializer(controller).data, status=status.HTTP_201_CREATED)
@@ -51,7 +51,7 @@ class FetchUserView(APIView):
         courier = Courier.objects.filter(telegram_id=telegram_id).first()
         if courier:
             profile = {
-                "role": "курьер", 
+                "role": "courier",
                 "full_name": courier.full_name, 
                 "phone_number": courier.phone_number, 
             }
@@ -60,7 +60,7 @@ class FetchUserView(APIView):
         controller = Controller.objects.filter(telegram_id=telegram_id).first()
         if controller:
             profile = {
-                "role": "админ", 
+                "role": "controller",
                 "full_name": controller.full_name, 
                 "phone_number": controller.phone_number, 
             }
@@ -76,7 +76,7 @@ class UpdateCourierView(APIView):
             return Response({"error": "telegram_id required"}, status=status.HTTP_400_BAD_REQUEST)
 
         courier = Courier.objects.filter(telegram_id=tg_id).first()
-        if courier:
+        if not courier:
             return Response({"error": "Courier not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = CourierSerializer(courier, data=request.data, partial=True)
@@ -94,7 +94,7 @@ class UpdateControllerView(APIView):
             return Response({"error": "telegram_id required"}, status=status.HTTP_400_BAD_REQUEST)
 
         controller = Controller.objects.filter(telegram_id=tg_id).first()
-        if controller:
+        if not controller:
             return Response({"error": "Admin not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = ControllerSerializer(controller, data=request.data, partial=True)

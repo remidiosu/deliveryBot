@@ -4,7 +4,7 @@ from aiogram.types import (
 )
 
 
-def _profile_menu_kb() -> ReplyKeyboardMarkup:
+def profile_menu_kb() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="Изменить имя")],

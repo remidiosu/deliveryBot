@@ -9,9 +9,11 @@ from aiogram.fsm.context import FSMContext
 
 from states.auth_states import Onboard
 from routes.auth_routes.util import normalize_phone
-from services.api_service import create_user 
+from services.api_service import create_user
+
 
 router = Router()
+
 
 @router.message(Onboard.ask_full_name, F.text)
 async def collect_full_name(message: Message, state: FSMContext):
@@ -32,6 +34,7 @@ async def collect_full_name(message: Message, state: FSMContext):
         "Отправьте номер телефона (кнопкой ниже) или введите вручную в формате +7707XXXXXXX.",
         reply_markup=kb,
     )
+
 
 @router.message(Onboard.ask_phone, F.contact)
 async def collect_phone_contact(message: Message, state: FSMContext):
@@ -56,14 +59,16 @@ async def _finalize_save(message: Message, state: FSMContext, phone: str):
     full_name = data.get("full_name")
     role = data.get("role")
 
+    print(message.from_user.id)
+
     await create_user(
-        telegram_id=message.from_user.id,# type: ignore 
+        telegram_id=message.from_user.id,  # type: ignore
         role=role,  # type: ignore
-        full_name=full_name, # type: ignore
+        full_name=full_name,  # type: ignore
         phone_number=phone
     )
 
-    who = "админ" if role == "admin" else "курьер"
+    who = "админ" if role == "controller" else "курьер"
     await state.clear()
     await message.answer(
         f"Готово ✅ \n Вы зарегистрированы как *{who}*.\n Имя: {full_name} \n Телефон: {phone}",

@@ -11,11 +11,13 @@ from routes.auth_routes.start_cmd import start
 
 router = Router()
 
+
 @router.message(Command("cancel"))
 async def cancel_any(m: Message, state: FSMContext):
     await state.clear()
     await m.answer("Отменено.")
     await start(m, state)
+
 
 @router.callback_query(F.data == "role:controller", Onboard.waiting_role)
 async def pick_controller(c: CallbackQuery, state: FSMContext):
@@ -25,6 +27,7 @@ async def pick_controller(c: CallbackQuery, state: FSMContext):
         "Введите код администратора (получен от владельца):\n`/code <секрет>` Пример: `/code 123321`",
         parse_mode="Markdown",
     )
+
 
 @router.message(Onboard.controller_code, F.text)
 async def controller_enter_code(m: Message, state: FSMContext):

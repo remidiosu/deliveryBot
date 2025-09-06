@@ -10,13 +10,14 @@ from aiogram.types import (
 )
 
 from states.profile_states import ProfileFSM
-from keyboards.profile_kb import _profile_menu_kb
+from keyboards.profile_kb import profile_menu_kb
 from routes.auth_routes.start_cmd import start
 from routes.auth_routes.util import normalize_phone
 from services.api_service import fetch_user, update_user
 
 
 router = Router()
+
 
 @router.message(Command("profile"))
 async def profile_entry(message: Message, state: FSMContext):
@@ -30,7 +31,7 @@ async def profile_entry(message: Message, state: FSMContext):
         return
     
     profile = actor['data']
-    full_name =  profile.get("full_name")
+    full_name = profile.get("full_name")
     phone = profile.get("phone_number")
 
     text = (
@@ -40,8 +41,7 @@ async def profile_entry(message: Message, state: FSMContext):
         "Что хотите изменить?"
     )
     await state.set_state(ProfileFSM.choose_field)
-    await message.answer(text, reply_markup=_profile_menu_kb(), parse_mode="Markdown")
-
+    await message.answer(text, reply_markup=profile_menu_kb(), parse_mode="Markdown")
 
 
 @router.message(ProfileFSM.choose_field, F.text.lower().in_(["изменить имя", "изменить телефон", "отмена"]))

@@ -1,7 +1,9 @@
 import re
 from typing import Optional
 
+
 PHONE_RE = re.compile(r"^\+?\d{7,15}$")
+
 
 def normalize_phone(raw: str) -> Optional[str]:
     if not raw:

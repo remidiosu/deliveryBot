@@ -10,6 +10,7 @@ from services.api_service import verify_user
 
 router = Router()
 
+
 @router.message(CommandStart())
 async def start(message: Message, state: FSMContext):
     tg_id = message.from_user.id # pyright: ignore[reportOptionalMemberAccess]
@@ -29,4 +30,3 @@ async def start(message: Message, state: FSMContext):
     kb.button(text="Администратор", callback_data="role:controller")
     kb.adjust(2)
     await message.answer("Кто вы?", reply_markup=kb.as_markup())
-    
