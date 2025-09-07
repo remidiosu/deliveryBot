@@ -29,12 +29,9 @@ async def get_role_cached(tg_id: int) -> dict | None:
 class AuthMiddleware(BaseMiddleware):
     async def __call__(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
                        event: TelegramObject, data: Dict[str, Any]) -> Any:
-        if isinstance(event, (Message, CallbackQuery)):
-            from_user = event.from_user
-        else:
-            from_user = getattr(event, "from_user", None)
+        user = data["event_from_user"]
 
-        info = await get_role_cached(from_user.id)
+        info = await get_role_cached(user.id)
         data["role"] = info.get("role")
         data["is_registered"] = info.get("registered")
 

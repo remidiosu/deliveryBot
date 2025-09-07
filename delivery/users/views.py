@@ -104,4 +104,27 @@ class UpdateControllerView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
+
+"""    path('controller/couriers/', view=views.FetchCouriersByController.as_view()), 
+    path('controller/add/courier/', view=views.AddCourier.as_view()), 
+    path('courier/', view=views.FetchCourierByPhone.as_view())"""
+
+class FetchCourierByController(APIView): 
+    def get(self, request): 
+        tg_id = request.data.get("telegram_id")
+        if not tg_id:
+            return Response({"error": "telegram_id required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        courier = Courier().objects.filter(tg_id=tg_id).first()
+
+
+class AddCourier(APIView): 
+    def patch(self, request): 
+        tg_id = request.data.get("telegram_id")
+        phone_number = request.data.get("phone_number")
+
+        if not tg_id or not phone_number:
+            return Response({"error": "telegram_id and phone # are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        courier = Courier().objects.filter(phone_number=phone_number).first()
+        # update the courier

@@ -36,3 +36,18 @@ def products_menu_kb() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="➕ Добавить товар",   callback_data="dir:products:add")],
         [InlineKeyboardButton(text="⬅️ Назад",           callback_data="dir:root")],
     ])
+
+
+def add_courier_kb(phone: str) -> InlineKeyboardMarkup: 
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Добавить", callback_data=f"dir:couriers:add:confirm:{phone}"
+                ),
+                InlineKeyboardButton(
+                    text="✖️ Отмена", callback_data="dir:couriers:add:cancel"
+                ),
+            ]
+        ]
+    )
