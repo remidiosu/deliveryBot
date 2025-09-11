@@ -15,15 +15,16 @@ router = Router()
 @router.callback_query(F.data == "dir:couriers:list")
 async def list_couriers(cb: CallbackQuery):
     controller_id = cb.from_user.id 
-    couriers = await fetch_couriers(controller_id)
+    response = await fetch_couriers(controller_id)
+    couriers = response["data"]["couriers"]
 
     if not couriers:
         await cb.message.edit_text("У вас пока нет прикрепленных курьеров.")
         return
-    
+
     text = "📋 Ваши курьеры:\n\n"
-    for c in couriers: 
-        text += f"• {c.get('full_name', 'Без имени')} (тел: {c.get('phone', '-')})\n"
+    for c in couriers:
+        text += f"• {c.get('full_name', 'Без имени')} (тел: {c.get('phone_number', '(ошибка, номер не доступен)')})\n"
 
     await cb.message.edit_text(text)
 
@@ -41,20 +42,19 @@ async def process_courier_phone(message: Message, state: FSMContext):
     
     if not phone_number:
         await message.answer(
-            "❌ Неверный формат номера. Введите номер ещё раз (разрешены 7–15 цифр, с/без '+')."
+            "❌ Неверный формат номера. Введите номер ещё раз (разрешены 7–15 цифр, с '+')."
         )
-        return await show_directories(message, is_registered=True, role='админ')
+        return await add_courier(message)
     
     try:
         response = await get_courier_by_phone(phone_number)
         preview = response.get("data")
     except Exception as e:
-        await message.answer(f"⚠️ Ошибка при поиске курьера. Попробуйте снова отправить номер.")
+        await message.answer(f"⚠️ Ошибка при поиске курьера.")
         return await show_directories(message, is_registered=True, role='админ')
 
-    
     if not preview: 
-        await message.answer("Не нашёл курьера с таким номером. Отправьте другой номер или нажмите /cancel.")
+        await message.answer("Не нашёл курьера с таким номером.")
         return await show_directories(message, is_registered=True, role='админ')
 
     await state.update_data(phone=phone_number, preview=preview)

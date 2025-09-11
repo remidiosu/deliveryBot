@@ -71,7 +71,7 @@ async def add_courier_to_controller(telegram_id, phone_number: str | None = None
 
 
 async def get_courier_by_phone(phone_number: str) -> dict: 
-    url = f"{BASE_URL}/courier/"
+    url = f"{BASE_URL}/courier/fetch/phone/"
     payload = {
         "phone_number": phone_number
     }

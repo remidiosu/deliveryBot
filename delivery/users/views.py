@@ -103,19 +103,22 @@ class UpdateControllerView(APIView):
             return Response(CourierSerializer(updated).data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
-"""    path('controller/couriers/', view=views.FetchCouriersByController.as_view()), 
-    path('controller/add/courier/', view=views.AddCourier.as_view()), 
-    path('courier/', view=views.FetchCourierByPhone.as_view())"""
 
-class FetchCourierByController(APIView): 
+class FetchCouriersByController(APIView):
     def get(self, request): 
         tg_id = request.data.get("telegram_id")
         if not tg_id:
             return Response({"error": "telegram_id required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        courier = Courier().objects.filter(tg_id=tg_id).first()
+        controller = Controller.objects.filter(telegram_id=tg_id).first()
+        if not controller:
+            return Response({"error": "Controller not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        couriers = Courier.objects.filter(controller=controller.id, is_active=True).all()
+        data = CourierSerializer(couriers, many=True).data
+
+        return Response({"couriers": data}, status=status.HTTP_200_OK)
 
 
 class AddCourier(APIView): 
@@ -126,5 +129,27 @@ class AddCourier(APIView):
         if not tg_id or not phone_number:
             return Response({"error": "telegram_id and phone # are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        courier = Courier().objects.filter(phone_number=phone_number).first()
+        controller = Controller.objects.filter(telegram_id=tg_id).first()
+        courier = Courier.objects.filter(phone_number=phone_number).first()
+        if not courier:
+            return Response({"error": "Courier not found"}, status=status.HTTP_404_NOT_FOUND)
+
         # update the courier
+        courier.controller = controller
+        courier.save(update_fields=["controller"])
+
+        return Response(CourierSerializer(courier).data, status=status.HTTP_201_CREATED)
+
+
+class FetchCourierByPhone(APIView):
+    def get(self, request):
+        phone_number = request.data.get("phone_number")
+
+        if not phone_number:
+            return Response({"error": "phone_number required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        courier = Courier.objects.filter(phone_number=phone_number).first()
+        if not courier:
+            return Response({"error": "Courier not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(CourierSerializer(courier).data, status=status.HTTP_200_OK)

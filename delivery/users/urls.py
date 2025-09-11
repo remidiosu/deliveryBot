@@ -13,5 +13,5 @@ urlpatterns = [
     path('update/controller/', view=UpdateControllerView.as_view()),
     path('controller/couriers/', view=views.FetchCouriersByController.as_view()), 
     path('controller/add/courier/', view=views.AddCourier.as_view()), 
-    path('courier/', view=views.FetchCourierByPhone.as_view())
+    path('courier/fetch/phone/', view=views.FetchCourierByPhone.as_view())
 ]
